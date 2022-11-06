@@ -19,9 +19,10 @@
                 </div>
                 <x-jet-input class="flex-1 mx-4" placeholder="Escriba lo que quiere buscar" type="text"
                     wire:model='search' />
-                @livewire('create-post')
+                @livewire('admin.create-service')
             </div>
-            @if (count($posts))
+           
+            @if (count($services))
                 <table class="min-w-full divide-y divide-gray-200">
                     <thead class="bg-gray-50">
                         <tr>
@@ -78,6 +79,21 @@
                                     <i class="fas fa-sort float-right mt-1"></i>
                                 @endif
                             </th>
+                            <th scope="col"
+                                class="px-6 cursor-pointer py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                                wire:click="order('price')">
+                                Precio
+                                @if ($sort == 'price')
+                                    @if ($direction == 'asc')
+                                        <i class="fas fa-sort-alpha-up-alt float-right mt-1"></i>
+                                    @else
+                                        <i class="fas fa-sort-alpha-down-alt float-right mt-1"></i>
+                                    @endif
+
+                                @else
+                                    <i class="fas fa-sort float-right mt-1"></i>
+                                @endif
+                            </th>
                             {{-- Sort --}}
 
 
@@ -88,7 +104,7 @@
                         </tr>
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200">
-                        @foreach ($posts as $item)
+                        @foreach ($services as $item)
                             <tr>
 
                                 <td class="px-6 py-4 ">
@@ -99,6 +115,9 @@
                                 </td>
                                 <td class="px-6 py-4 ">
                                     <div class="text-sm text-gray-900">{!!$item->content !!}</div>
+                                </td>
+                                <td class="px-6 py-4 ">
+                                    <div class="text-sm text-gray-900">{!!$item->price !!}</div>
                                 </td>
                                 <td class="px-6 py-4 flex text-sm font-medium">
                                     {{-- @livewire('edit-post', ['post' => $post], key($post->id)) --}}
@@ -114,9 +133,9 @@
                         <!-- More people... -->
                     </tbody>
                 </table>
-                @if ($posts->hasPages())
+                @if ($services->hasPages())
                     <div class="px-6 py-3">
-                        {{ $posts->links() }}
+                        {{ $services->links() }}
                     </div>
                 @endif
 
@@ -131,7 +150,7 @@
 
     <x-jet-dialog-modal wire:ignore  wire:model="open_edit">
         <x-slot name="title">
-            Editar la galeria de titulo: {{ $post->title }}
+            Editar el servicio de titulo: {{ $service->title }}
         </x-slot>
         <x-slot name="content">
 
@@ -146,20 +165,25 @@
             @if ($image)
                 <img src="{{ $image->temporaryUrl() }}" class="mb-4" alt="">
 
-            @elseif($post->image)
-                <img src="{{ Storage::url($post->image) }}" alt="">
+            @elseif($service->image)
+                <img src="{{ Storage::url($service->image) }}" alt="">
             @endif
 
             <div>
-                <x-jet-label value="Título principal:" />
-                <x-jet-input wire:model="post.title" type="text" class="w-full" />
+                <x-jet-label value="Título del servicio:" />
+                <x-jet-input wire:model="service.title" type="text" class="w-full" />
             </div>
 
             <div wire:ignore>
-                <x-jet-label value="Descripción de la imágen" />
-                <textarea  wire:model="post.content" class="w-full form-control" rows="6"></textarea>
+                <x-jet-label value="Descripción del servicio" />
+                <textarea  wire:model="service.content" class="w-full form-control" rows="6"></textarea>
+            </div>
+            <div wire:ignore>
+                <x-jet-label value="Precio del servicio" />
+                <x-jet-input wire:model="service.price" type="text" class="w-full" />
             </div>
             <div class="mb-4">
+                <x-jet-label value="Imagen del servicio" />
                 <input type="file" wire:model="image" id="{{ $identificador }}">
             </div>
         </x-slot>
@@ -190,7 +214,7 @@
                 }).then((result) => {
                     if (result.isConfirmed) {
 
-                        Livewire.emitTo('show-posts', 'delete', postId)
+                        Livewire.emitTo('admin.show-services', 'delete', postId)
 
                         Swal.fire(
                             'Eliminado!',

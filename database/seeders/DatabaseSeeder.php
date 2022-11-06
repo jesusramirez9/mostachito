@@ -17,6 +17,17 @@ class DatabaseSeeder extends Seeder
         Storage::deleteDirectory('posts');
         Storage::makeDirectory('posts');
 
-         \App\Models\Post::factory(10)->create();
+        Storage::deleteDirectory('services');
+        Storage::makeDirectory('services');
+
+        Storage::deleteDirectory('homes');
+        Storage::makeDirectory('homes');
+
+        Storage::deleteDirectory('slides');
+        Storage::makeDirectory('slides');
+
+         \App\Models\Post::factory(2)->create();
+         \App\Models\Service::factory(2)->create();
+         \App\Models\Home::factory(2)->create();
     }
 }

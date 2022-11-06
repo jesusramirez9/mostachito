@@ -19,9 +19,12 @@
                 </div>
                 <x-jet-input class="flex-1 mx-4" placeholder="Escriba lo que quiere buscar" type="text"
                     wire:model='search' />
-                @livewire('create-post')
+                @livewire('admin.create-slide')
             </div>
-            @if (count($posts))
+            <div>
+
+            </div>
+            @if (count($slides))
                 <table class="min-w-full divide-y divide-gray-200">
                     <thead class="bg-gray-50">
                         <tr>
@@ -37,7 +40,6 @@
                                     @else
                                         <i class="fas fa-sort-alpha-down-alt float-right mt-1"></i>
                                     @endif
-
                                 @else
                                     <i class="fas fa-sort float-right mt-1"></i>
                                 @endif
@@ -47,37 +49,22 @@
                             <th scope="col"
                                 class="px-6 cursor-pointer py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                                 wire:click="order('title')">
-                                Titulo
+                                Url
 
                                 {{-- Sort --}}
 
-                                @if ($sort == 'title')
+                                @if ($sort == 'url_yt')
                                     @if ($direction == 'asc')
                                         <i class="fas fa-sort-alpha-up-alt float-right mt-1"></i>
                                     @else
                                         <i class="fas fa-sort-alpha-down-alt float-right mt-1"></i>
                                     @endif
-
                                 @else
                                     <i class="fas fa-sort float-right mt-1"></i>
                                 @endif
 
                             </th>
-                            <th scope="col"
-                                class="px-6 cursor-pointer py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                                wire:click="order('content')">
-                                Contenido
-                                @if ($sort == 'content')
-                                    @if ($direction == 'asc')
-                                        <i class="fas fa-sort-alpha-up-alt float-right mt-1"></i>
-                                    @else
-                                        <i class="fas fa-sort-alpha-down-alt float-right mt-1"></i>
-                                    @endif
 
-                                @else
-                                    <i class="fas fa-sort float-right mt-1"></i>
-                                @endif
-                            </th>
                             {{-- Sort --}}
 
 
@@ -88,7 +75,7 @@
                         </tr>
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200">
-                        @foreach ($posts as $item)
+                        @foreach ($slides as $item)
                             <tr>
 
                                 <td class="px-6 py-4 ">
@@ -96,9 +83,6 @@
                                 </td>
                                 <td class="px-6 py-4 ">
                                     <div class="text-sm text-gray-900">{{ $item->title }}</div>
-                                </td>
-                                <td class="px-6 py-4 ">
-                                    <div class="text-sm text-gray-900">{!!$item->content !!}</div>
                                 </td>
                                 <td class="px-6 py-4 flex text-sm font-medium">
                                     {{-- @livewire('edit-post', ['post' => $post], key($post->id)) --}}
@@ -114,12 +98,7 @@
                         <!-- More people... -->
                     </tbody>
                 </table>
-                @if ($posts->hasPages())
-                    <div class="px-6 py-3">
-                        {{ $posts->links() }}
-                    </div>
-                @endif
-
+                
             @else
                 <div class="px-6 py-4">
                     No existe ningún registro coincidente
@@ -129,9 +108,9 @@
         </x-table>
     </div>
 
-    <x-jet-dialog-modal wire:ignore  wire:model="open_edit">
+    <x-jet-dialog-modal wire:ignore wire:model="open_edit">
         <x-slot name="title">
-            Editar la galeria de titulo: {{ $post->title }}
+            Editar
         </x-slot>
         <x-slot name="content">
 
@@ -142,40 +121,109 @@
                 </strong>
                 <span class="block sm:inline">Espere un momento hasta que la imagen se haya procesado..</span>
             </div>
+            <div wire:loading wire:target="image2"
+                class="mb-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative">
+                <strong class="font-bold">
+                    Imagen Cargando
+                </strong>
+                <span class="block sm:inline">Espere un momento hasta que la imagen se haya procesado..</span>
+            </div>
+            <div wire:loading wire:target="image3"
+                class="mb-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative">
+                <strong class="font-bold">
+                    Imagen Cargando
+                </strong>
+                <span class="block sm:inline">Espere un momento hasta que la imagen se haya procesado..</span>
+            </div>
+            <div wire:loading wire:target="image4"
+                class="mb-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative">
+                <strong class="font-bold">
+                    Imagen Cargando
+                </strong>
+                <span class="block sm:inline">Espere un momento hasta que la imagen se haya procesado..</span>
+            </div>
+            <div class="flex space-x-5">
+                <div>
+                    @if ($image)
+                        <img src="{{ $image->temporaryUrl() }}" class="mb-4 w-20 object-cover object-center h-20"
+                            alt="">
+                    @elseif($slide->image)
+                        <img src="{{ Storage::url($slide->image) }}" class="w-20 object-cover object-center h-20"
+                            alt="">
+                    @endif
+                </div>
+                <div>
+                    @if ($image2)
+                        <img src="{{ $image2->temporaryUrl() }}" class="mb-4 w-20 object-cover object-center h-20"
+                            alt="">
+                    @elseif($slide->image2)
+                        <img src="{{ Storage::url($slide->image2) }}" class="w-20 object-cover object-center h-20"
+                            alt="">
+                    @endif
+                </div>
+                <div>
+                    @if ($image3)
+                        <img src="{{ $image3->temporaryUrl() }}" class="mb-4 w-20 object-cover object-center h-20"
+                            alt="">
+                    @elseif($slide->image3)
+                        <img src="{{ Storage::url($slide->image3) }}" class="w-20 object-cover object-center h-20"
+                            alt="">
+                    @endif
+                </div>
+                <div>
+                    @if ($image4)
+                        <img src="{{ $image4->temporaryUrl() }}" class="mb-4 w-20 object-cover object-center h-20"
+                            alt="">
+                    @elseif($slide->image4)
+                        <img src="{{ Storage::url($slide->image4) }}" class="w-20 object-cover object-center h-20"
+                            alt="">
+                    @endif
+                </div>
 
-            @if ($image)
-                <img src="{{ $image->temporaryUrl() }}" class="mb-4" alt="">
 
-            @elseif($post->image)
-                <img src="{{ Storage::url($post->image) }}" alt="">
-            @endif
 
-            <div>
-                <x-jet-label value="Título principal:" />
-                <x-jet-input wire:model="post.title" type="text" class="w-full" />
             </div>
 
-            <div wire:ignore>
-                <x-jet-label value="Descripción de la imágen" />
-                <textarea  wire:model="post.content" class="w-full form-control" rows="6"></textarea>
+            <div class="mb-4 mt-4">
+                <x-jet-label value="Título del servicio:" />
+                <x-jet-input type="text" class="w-full" wire:model="slide.title" />
+              
+
+            </div>
+            <div class="mb-4 mt-4">
+                <x-jet-label value="Fondos que aparecen al inicio de la web:" />
+                
             </div>
             <div class="mb-4">
-                <input type="file" wire:model="image" id="{{ $identificador }}">
+                <x-jet-label value="Imagen del servicio1:" />
+                <input type="file" wire:model="image" id="{{ $identificador2 }}">
+            </div>
+            <div class="mb-4">
+                <x-jet-label value="Imagen del servicio2:" />
+                <input type="file" wire:model="image2" id="{{ $identificador3 }}">
+            </div>
+            <div class="mb-4">
+                <x-jet-label value="Imagen del servicio3:" />
+                <input type="file" wire:model="image3" id="{{ $identificador4 }}">
+            </div>
+            <div class="mb-4">
+                <x-jet-label value="Imagen del servicio4:" />
+                <input type="file" wire:model="image4" id="{{ $identificador5 }}">
             </div>
         </x-slot>
         <x-slot name="footer">
             <x-jet-secondary-button wire:click="$set('open_edit', false)" class="mr-4">
                 Cancelar
             </x-jet-secondary-button>
-            <x-jet-danger-button wire:click="update" wire:loadin.attr="disabled:opacity-25">
-                Actualizar 
+            <x-jet-danger-button wire:click="update" wire:target="save, image, image2, image3, image4" wire:loadin.attr="disabled:opacity-25">
+                Actualizar
             </x-jet-danger-button>
         </x-slot>
 
     </x-jet-dialog-modal>
 
     @push('js')
-     <script src="{{asset('vendor/ckeditor5-build-classic/build/ckeditor.js')}}"></script>
+        <script src="{{ asset('vendor/ckeditor5-build-classic/build/ckeditor.js') }}"></script>
         <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
         <script>
             Livewire.on('deletePost', postId => {
@@ -190,7 +238,7 @@
                 }).then((result) => {
                     if (result.isConfirmed) {
 
-                        Livewire.emitTo('show-posts', 'delete', postId)
+                        Livewire.emitTo('admin.show-slide', 'delete', postId)
 
                         Swal.fire(
                             'Eliminado!',
@@ -201,8 +249,6 @@
                 })
             })
         </script>
-       
-        
     @endpush
 
 </div>

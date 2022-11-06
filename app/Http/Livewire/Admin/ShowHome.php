@@ -1,21 +1,25 @@
 <?php
 
-namespace App\Http\Livewire;
+namespace App\Http\Livewire\Admin;
 
-use App\Models\Post;
+use App\Models\Home;
+use App\Models\Service;
 use Illuminate\Support\Facades\Storage;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 use Livewire\WithPagination;
 
-class ShowPosts extends Component
+class ShowHome extends Component
 {
     use WithPagination;
     use WithFileUploads; 
-    public $image, $identificador;
-
+    public $image, $identificador, $identificador2, $identificador3, $identificador4, $identificador5;
+    public $image2, $image3, $image4, $filepdf;
+    public $service;
     public $open_edit =false;
     public $post;
+    public $home;
+    public $url_yt;
     public $search = '';
     public $sort = 'id';
     public $direction = 'desc';
@@ -31,13 +35,12 @@ class ShowPosts extends Component
     ];
 
     protected $rules = [
-        'post.title' => 'required',
-        'post.content' => 'required',
+        'home.url_yt' => 'required',
     ];  
   
     public function mount(){
         $this->identificador = rand();
-        $this->post = new Post();
+        $this->home = new Home();
     }
 
     public function updatingSearch(){
@@ -48,16 +51,15 @@ class ShowPosts extends Component
     public function render()
     {
         if ($this->readyToLoad) {
-           $posts = Post::where('title', 'like', '%'.$this->search.'%')
-                       ->orWhere('content', 'like', '%'.$this->search.'%')
+           $homes = Home::where('url_yt', 'like', '%'.$this->search.'%')
                        ->orderBy($this->sort, $this->direction)
                        ->paginate($this->cant);
         }else{
-            $posts = [];
+            $homes = [];
         }
 
         
-        return view('livewire.show-posts', compact('posts'));
+        return view('livewire.admin.show-home', compact('homes'));
     }
 
     public function loadPosts(){
@@ -79,28 +81,46 @@ class ShowPosts extends Component
         }
     }
 
-    public function edit(Post $post){
-        $this->post = $post;
+    public function edit(Home $home){
+        $this->home = $home;
         $this->open_edit = true;
     }
 
     public function update(){
         $this->validate();
         
+        if ($this->filepdf) {
+            Storage::delete([$this->home->filepdf]);
+            $this->home->filepdf = $this->filepdf->store('homes');
+        }
         if ($this->image) {
-            Storage::delete([$this->post->image]);
-            $this->post->image = $this->image->store('posts');
+            Storage::delete([$this->home->image]);
+            $this->home->image = $this->image->store('homes');
+        }
+        if ($this->image2) {
+            Storage::delete([$this->home->image2]);
+            $this->home->image2 = $this->image2->store('homes');
+        }
+        if ($this->image3) {
+            Storage::delete([$this->home->image3]);
+            $this->home->image3 = $this->image3->store('homes');
+        }
+        if ($this->image4) {
+            Storage::delete([$this->home->image4]);
+            $this->home->image4 = $this->image4->store('homes');
         }
 
-        $this->post->save();
+        $this->home->save();
 
-        $this->reset(['open_edit','image']);
+        $this->reset(['open_edit','filepdf','image','image2','image3','image4']);
 
         $this->identificador = rand();
-        $this->emit('alert', 'El post se actualizo satisfactoriamente');
+        $this->emit('alert', 'Se actualizo satisfactoriamente');
     }
 
-    public function delete(Post $post){
-        $post->delete();
+    public function delete(Home $home){
+        $home->delete();
     }
+
+   
 }

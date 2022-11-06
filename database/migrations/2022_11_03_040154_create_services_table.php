@@ -1,11 +1,11 @@
 <?php
 
-use App\Models\Post;
+use App\Models\Service;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreatePostsTable extends Migration
+class CreateServicesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -14,12 +14,13 @@ class CreatePostsTable extends Migration
      */
     public function up()
     {
-        Schema::create('posts', function (Blueprint $table) {
+        Schema::create('services', function (Blueprint $table) {
             $table->id();
             $table->string('title');
             $table->string('content');
+            $table->string('price');
             $table->string('image');
-            $table->enum('status',[Post::BORRADOR, Post::PUBLICADO])->default(Post::BORRADOR);
+            $table->enum('status',[Service::BORRADOR, Service::PUBLICADO])->default(Service::BORRADOR);
             $table->timestamps();
         });
     }
@@ -31,6 +32,6 @@ class CreatePostsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('posts');
+        Schema::dropIfExists('services');
     }
 }

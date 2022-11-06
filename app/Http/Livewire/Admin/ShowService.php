@@ -1,21 +1,22 @@
 <?php
 
-namespace App\Http\Livewire;
+namespace App\Http\Livewire\Admin;
 
-use App\Models\Post;
+use App\Models\Service;
 use Illuminate\Support\Facades\Storage;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 use Livewire\WithPagination;
 
-class ShowPosts extends Component
+class ShowService extends Component
 {
     use WithPagination;
     use WithFileUploads; 
     public $image, $identificador;
-
+    public $service;
     public $open_edit =false;
     public $post;
+    public $price;
     public $search = '';
     public $sort = 'id';
     public $direction = 'desc';
@@ -31,13 +32,14 @@ class ShowPosts extends Component
     ];
 
     protected $rules = [
-        'post.title' => 'required',
-        'post.content' => 'required',
+        'service.title' => 'required',
+        'service.content' => 'required',
+        'service.price' => 'required',
     ];  
   
     public function mount(){
         $this->identificador = rand();
-        $this->post = new Post();
+        $this->service = new Service();
     }
 
     public function updatingSearch(){
@@ -48,16 +50,17 @@ class ShowPosts extends Component
     public function render()
     {
         if ($this->readyToLoad) {
-           $posts = Post::where('title', 'like', '%'.$this->search.'%')
+           $services = Service::where('title', 'like', '%'.$this->search.'%')
                        ->orWhere('content', 'like', '%'.$this->search.'%')
+                       ->orWhere('price','like','%'.$this->price.'%')
                        ->orderBy($this->sort, $this->direction)
                        ->paginate($this->cant);
         }else{
-            $posts = [];
+            $services = [];
         }
 
         
-        return view('livewire.show-posts', compact('posts'));
+        return view('livewire.admin.show-service', compact('services'));
     }
 
     public function loadPosts(){
@@ -79,8 +82,8 @@ class ShowPosts extends Component
         }
     }
 
-    public function edit(Post $post){
-        $this->post = $post;
+    public function edit(Service $service){
+        $this->service = $service;
         $this->open_edit = true;
     }
 
@@ -88,19 +91,21 @@ class ShowPosts extends Component
         $this->validate();
         
         if ($this->image) {
-            Storage::delete([$this->post->image]);
-            $this->post->image = $this->image->store('posts');
+            Storage::delete([$this->service->image]);
+            $this->service->image = $this->image->store('services');
         }
 
-        $this->post->save();
+        $this->service->save();
 
         $this->reset(['open_edit','image']);
 
         $this->identificador = rand();
-        $this->emit('alert', 'El post se actualizo satisfactoriamente');
+        $this->emit('alert', 'El servicio se actualizo satisfactoriamente');
     }
 
-    public function delete(Post $post){
-        $post->delete();
+    public function delete(Service $service){
+        $service->delete();
     }
+
+    
 }
