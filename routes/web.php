@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\GaleryController;
 use App\Http\Controllers\ImageController;
 use App\Http\Livewire\Admin\ShowHome;
 use App\Http\Livewire\Admin\ShowService;
@@ -21,6 +22,8 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 });
+
+Route::get('galeria', [GaleryController::class, 'index'])->name('galeria');
 
 Route::middleware(['auth:sanctum', 'verified'])->get('/dashboard', ShowPosts::class)->name('dashboard');
 Route::middleware(['auth:sanctum', 'verified'])->get('/servicios', ShowService::class)->name('servicios');
